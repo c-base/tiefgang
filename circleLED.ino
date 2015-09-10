@@ -8,14 +8,17 @@ void setup() {
 
 void loop() {
 
+  int repeat = 30;
+  
   showCase();
+
 }
 
 void showCase()
 {
   int repeat = 10;
 
-  tickTock(CRGB::Green, CRGB::Red, 20, repeat);
+  tickTock(CRGB::Green, CRGB::Blue, 40, repeat);
   tickTock(CRGB::Blue, CRGB::Purple, 5, repeat);
 
   oneLight(CRGB::Purple, 25, repeat);
@@ -34,8 +37,25 @@ void showCase()
   followMe(CRGB::Green, CRGB::Yellow, 50, repeat);
   followMe(CRGB::Red, CRGB::Orange, 50, repeat);
 
+  justOnExclamationMarkEleven(200);
+  singleColor(CRGB::Aqua, 10);
+
+  ripple(0.8, 2, 700, repeat);
+
   //rainbowBeat(CRGB::Blue, 30, 10, 255);
   //heartBeat(CRGB::Aqua, 300);
+}
+
+void justOnExclamationMarkEleven(int delayDuration) {
+  singleColor(CRGB::White, delayDuration);
+}
+
+void singleColor(const CRGB &color1, int delayDuration) {
+  for (int dot = 0; dot < NUM_LEDS; dot++) {
+    leds[dot] = color1;
+  }
+  FastLED.show();
+  delay(delayDuration);
 }
 
 void heartBeat(const CRGB &color1, int delayDuration)
@@ -119,27 +139,24 @@ void quartettRotate(const CRGB &color1, const CRGB &color2, int delayDuration, i
 
 void tickTock(const CRGB &color1, const CRGB &color2, int delayDuration, int repeat)
 {
-  for (int rep = 0; rep < repeat; rep++) {
-    for (int dot = 0; dot < NUM_LEDS; dot++) {
-      for (int dot2 = 0; dot2 < NUM_LEDS; dot2++) {
+  for (int dot = 0; dot < repeat; dot++) {
+    for (int dot2 = 0; dot2 < NUM_LEDS; dot2++) {
 
-        int leFirstDot = (dot2) % NUM_LEDS;
-        int leSecondDot = (dot) % NUM_LEDS;
-        int leThirdDot = (dot + 1) % NUM_LEDS;
+      int leFirstDot = (dot2) % NUM_LEDS;
+      int leSecondDot = (dot) % NUM_LEDS;
+      int leThirdDot = (dot + 1) % NUM_LEDS;
 
-
-        if (leFirstDot != leSecondDot) {
-          leds[leSecondDot] = color2;
-          leds[leThirdDot] = color2;
-        }
-
-        leds[leFirstDot] = color1;
-
-        FastLED.show();
-        allOut();
-
-        delay(delayDuration);
+      if (leFirstDot != leSecondDot) {
+        leds[leSecondDot] = color2;
+        leds[leThirdDot] = color2;
       }
+
+      leds[leFirstDot] = color1;
+
+      FastLED.show();
+      allOut();
+
+      delay(delayDuration);
     }
   }
 }
@@ -206,59 +223,45 @@ void allOut() {
 // Conversion by Andrew Tuline
 //
 
-void ripple() {
+void ripple(float fadeRate, int maxSteps, int delayDuration, int repeat) {
 
-  int color;
-  int center = 0;
-  int step = -1; // need to be parameterized
-  int maxSteps = 16;
-  float fadeRate = 0.8;
+  int color = random(256);
+  int center = random(NUM_LEDS);//NUM_LEDS / 2;
   int diff;
-
   //background color
-  uint32_t currentBg = random(256);
+  uint32_t currentBg = 0;//CRGB::Black;//random(256);
   uint32_t nextBg = currentBg;
+  maxSteps = 8;  // fading steps
+  repeat = repeat * 100;
+  fadeRate = 0.9;
+  delayDuration = 200;
 
-  if (currentBg == nextBg) {
-    nextBg = random(256);
-  }
-  else if (nextBg > currentBg) {
-    currentBg++;
-  } else {
-    currentBg--;
-  }
-  for (uint16_t l = 0; l < NUM_LEDS; l++) {
-    leds[l] = CHSV(currentBg, 255, 50);         // strip.setPixelColor(l, Wheel(currentBg, 0.1));
-  }
-
-  if (step == -1) {
+  for (int rep = 0; rep < repeat; rep++) {
     center = random(NUM_LEDS);
     color = random(256);
-    step = 0;
-  }
+    for (int step = 0; step < maxSteps; step++) {
 
-  if (step == 0) {
-    leds[center] = CHSV(color, 255, 255);         // strip.setPixelColor(center, Wheel(color, 1));
-    step ++;
-  } else {
-    if (step < maxSteps) {
-      Serial.println(pow(fadeRate, step));
+      if (step == 0) {
+        leds[center] = CHSV(color, 255, 255);
+      } else {
 
-      leds[wrap(center + step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
-      leds[wrap(center - step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
-      if (step > 3) {
-        leds[wrap(center + step - 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
-        leds[wrap(center - step + 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
+        if (step < maxSteps) {
+          leds[wrap(center + step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
+          leds[wrap(center - step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
+
+          if (step > 3) {
+            leds[wrap(center + step - 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
+            leds[wrap(center - step + 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
+          }
+        }
       }
-      step ++;
-    }
-    else {
-      step = -1;
+
+      LEDS.show();
+      delay(delayDuration);
+      
     }
   }
-
-  LEDS.show();
-  delay(50);
+  //allOut();
 }
 
 
