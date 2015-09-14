@@ -3,29 +3,59 @@
 CRGB leds[NUM_LEDS];
 
 void setup() {
+  Serial.begin(9600);
   FastLED.addLeds<WS2801>(leds, NUM_LEDS);
 }
 
 void loop() {
 
-  showCase();
+  //Serial.print(".");
+  int repeat = 10;
+  int delayDuration = 10;
+
+  //lichtabsaugung();
+  //ripple(0.8, 4, delayDuration, repeat);
+  //ripple(0.8, 8, delayDuration, repeat);
+  showCase(delayDuration, repeat);
+  //ripple(0.8, 16, delayDuration, repeat);
+  lichtabsaugung();
 }
 
-void showCase()
+void showCase(int delayDuration, int repeat)
 {
-  int repeat = 10;
+  hueHueHue(CRGB::Red,   5, 3, 10, 20, 0, -5, 33, 255);
+  hueHueHue(CRGB::White, 5, 3, 10, 20, 0, -50, 0, 255);
+  hueHueHue(CRGB::White, 5, 3, 10, 20, 0, -50, -50, 255);
+  hueHueHue(CRGB::White, 5, 3, 10, 20, -100, 10, -1, 55);
+  hueHueHue(CRGB::Blue, 5, 39, 10, 20, -100, 10, -1, 105);
+  
+  ripple(0.9, 4, 100, 50);
+  
+  snakes(CRGB::Red, 2500, 100, 1);
+  snakes(CRGB::Red, 2500, 50, 1);
+  snakes(CRGB::Red, 2500, 10, 1);
+  snakes(CRGB::Red, 2500, 10, 1);
+  snakes(CRGB::Red, 2500, 10, 1);
 
-  tickTock(CRGB::Green, CRGB::Red, 20, repeat);
-  tickTock(CRGB::Blue, CRGB::Purple, 5, repeat);
 
-  oneLight(CRGB::Purple, 25, repeat);
-  oneLight(CRGB::Blue, 50, repeat);
+  fire(CRGB::Red, 10, 10, 1);
+  fire(CRGB::Red, 20, 50, 1);
+  fire(CRGB::Blue, 30, 100, 1);
+  fire(CRGB::Green, 40, 120, 1);
+  
+  tickTock(CRGB::Green, CRGB::Blue, 60, 5);
+  tickTock(CRGB::Blue, CRGB::Purple, 60, 5);
+  tickTock(CRGB::Crimson, CRGB::Amethyst, delayDuration, 5);
 
-  rotate(CRGB::Aqua, CRGB::Blue, 1, repeat);
-  rotate(CRGB::Red, CRGB::Blue, 3, repeat);
-  rotate(CRGB::Aqua, CRGB::Orange, 5, repeat);
+  oneLight(CRGB::Purple, 25, 5);
+  oneLight(CRGB::Blue, 50, 5);
+
+  rotate(CRGB::Aqua, CRGB::Blue, 1, 10);
+  rotate(CRGB::Red, CRGB::Blue, 3, 10);
+  rotate(CRGB::Aqua, CRGB::Orange, 5, 10);
 
   quartettRotate(CRGB::Blue, CRGB::Purple, 3, repeat);
+  quartettRotate(CRGB::Green, CRGB::Purple, 1, repeat);
   quartettRotate(CRGB::Green, CRGB::Purple, 1, repeat);
 
   against(CRGB::Red, CRGB::Aqua, 50, repeat);
@@ -33,9 +63,125 @@ void showCase()
 
   followMe(CRGB::Green, CRGB::Yellow, 50, repeat);
   followMe(CRGB::Red, CRGB::Orange, 50, repeat);
+  followMe(CRGB::Purple, CRGB::Green, 50, repeat);
 
+  justOnExclamationMarkEleven(200);
+  singleColor(CRGB::Aqua, 2000);
+
+
+  //beat(CRGB::Aqua, 8 * 5, 10, 20, delayDuration);
   //rainbowBeat(CRGB::Blue, 30, 10, 255);
   //heartBeat(CRGB::Aqua, 300);
+}
+
+void greyGode(const CRGB &color1, int tail, int hue, int delayDuration, int repeat)
+{
+  // ....
+}
+
+void snakesOnARow(const CRGB &color1, int hue, int delayDuration, int repeat)
+{
+  for (int rep = 0; rep < repeat; rep++) {
+    snake(CRGB::Red, rep, hue, delayDuration, repeat);
+  }
+}
+
+void snakes(const CRGB &color1, int hue, int delayDuration, int repeat)
+{
+  snake(CRGB::Red, 1, hue, delayDuration, repeat);
+  snake(CRGB::Red, 2, hue, delayDuration, repeat);
+  snake(CRGB::Red, 3, hue, delayDuration, repeat);
+  snake(CRGB::Red, 4, hue, delayDuration, repeat);
+  snake(CRGB::Red, 5, hue, delayDuration, repeat);
+  snake(CRGB::Red, 6, hue, delayDuration, repeat);
+}
+
+void snake(const CRGB &color1, int tail, int hue, int delayDuration, int repeat)
+{
+  for (int rep = 0; rep < repeat; rep++) {
+
+    int half = (NUM_LEDS / 2);
+    int leFirstDot = 0;
+    int leSecondDot = half;
+
+    for (int dot = 0; dot <= half; dot++) {
+
+      leFirstDot = (dot);
+      leSecondDot = (half + dot);
+
+      for (int t = 0; t < tail; t++) {
+        leds[wrap(leFirstDot + t)] = CHSV(color1, 255, pow(t / 10, hue) * hue);
+        leds[wrap(leFirstDot + t)].setHue(hue - t * 20);
+        leds[wrap(leSecondDot + t)] = CHSV(color1, 255, pow(t / 10, hue) * hue);
+        leds[wrap(leSecondDot + t)].setHue(hue - t * 20);
+      }
+
+      FastLED.show();
+      delay(delayDuration);
+      lichtabsaugung();
+    }
+
+  }
+}
+
+void fire(const CRGB &color1, int hue, int delayDuration, int repeat)
+{
+  for (int rep = 0; rep < repeat; rep++) {
+
+    int half = (NUM_LEDS / 2);
+    int leFirstDot = 0;
+    int leSecondDot = half;
+
+    for (int dot = 0; dot < NUM_LEDS; dot++) {
+
+      if (dot <= half) {
+        leFirstDot = (dot);
+
+        leSecondDot = (NUM_LEDS - dot);
+      }
+
+      leds[leFirstDot] = color1;
+      leds[leFirstDot].setHue(hue);
+
+      leds[leSecondDot] = color1;
+      leds[leSecondDot].setHue(hue);
+      FastLED.show();
+
+      delay(delayDuration);
+    }
+    lichtabsaugung();
+  }
+}
+
+void hueHueHue(const CRGB &color1, uint16_t gHue, uint8_t  gHueDelta, int delayDuration, int repeat, int r, int b, int g, int mod)
+{
+  for (int dot = 0; dot < NUM_LEDS; dot++) {
+    leds[dot] = color1;
+  }
+  for (int rep = 0; rep < repeat; rep++) {
+    gHue += gHueDelta; // compute new hue
+    for (int dot = 0; dot < NUM_LEDS; dot++) {
+
+      leds[dot].r = (leds[dot].r + r) % mod;
+      leds[dot].g = (leds[dot].g + g) % mod;
+      leds[dot].b = (leds[dot].b + b) % mod;
+      FastLED.show();
+      delay(delayDuration);
+    }
+  }
+  lichtabsaugung();
+}
+
+void justOnExclamationMarkEleven(int delayDuration) {
+  singleColor(CRGB::White, delayDuration);
+}
+
+void singleColor(const CRGB &color1, int delayDuration) {
+  for (int dot = 0; dot < NUM_LEDS; dot++) {
+    leds[dot] = color1;
+  }
+  FastLED.show();
+  delay(delayDuration);
 }
 
 void heartBeat(const CRGB &color1, int delayDuration)
@@ -84,7 +230,7 @@ void oneLight(const CRGB &color1, int delayDuration, int repeat)
       leds[leFirstDot] = color1;
 
       FastLED.show();
-      allOut();
+      lichtabsaugung();
 
       delay(delayDuration);
     }
@@ -109,7 +255,7 @@ void quartettRotate(const CRGB &color1, const CRGB &color2, int delayDuration, i
         leds[leFortthDot] = color2;
 
         FastLED.show();
-        allOut();
+        lichtabsaugung();
 
         delay(delayDuration);
       }
@@ -119,27 +265,26 @@ void quartettRotate(const CRGB &color1, const CRGB &color2, int delayDuration, i
 
 void tickTock(const CRGB &color1, const CRGB &color2, int delayDuration, int repeat)
 {
-  for (int rep = 0; rep < repeat; rep++) {
-    for (int dot = 0; dot < NUM_LEDS; dot++) {
-      for (int dot2 = 0; dot2 < NUM_LEDS; dot2++) {
+  for (int dot = 0; dot < repeat; dot++) {
+    for (int dot2 = 0; dot2 < NUM_LEDS; dot2++) {
 
-        int leFirstDot = (dot2) % NUM_LEDS;
-        int leSecondDot = (dot) % NUM_LEDS;
-        int leThirdDot = (dot + 1) % NUM_LEDS;
+      int leFirstDot = (dot2) % NUM_LEDS;
+      int leSecondDot = (dot) % NUM_LEDS;
+      int leThirdDot = (dot + 1) % NUM_LEDS;
 
-
-        if (leFirstDot != leSecondDot) {
-          leds[leSecondDot] = color2;
-          leds[leThirdDot] = color2;
-        }
-
-        leds[leFirstDot] = color1;
-
-        FastLED.show();
-        allOut();
-
-        delay(delayDuration);
+      if (leFirstDot != leSecondDot) {
+        leds[leSecondDot] = color2;
       }
+      if (leFirstDot != leThirdDot) {
+        leds[leThirdDot] = color2;
+      }
+
+      leds[leFirstDot] = color1;
+
+      FastLED.show();
+      lichtabsaugung();
+
+      delay(delayDuration);
     }
   }
 }
@@ -156,7 +301,7 @@ void followMe(const CRGB &color1, const CRGB &color2, int delayDuration, int rep
       leds[leFirstDot] = color1;
       leds[leSecondDot] = color2;
       FastLED.show();
-      allOut();
+      lichtabsaugung();
 
       delay(delayDuration);
     }
@@ -168,10 +313,14 @@ void against(const CRGB &color1, const CRGB &color2, int delayDuration, int repe
   for (int rep = 0; rep < repeat; rep++) {
     for (int dot = 0; dot < NUM_LEDS; dot++) {
 
-      leds[dot] = color1;
-      leds[NUM_LEDS - dot] = color2;
+      int leFirstDot = (dot + 1) % NUM_LEDS;
+      int leSecondDot = (NUM_LEDS - dot) % NUM_LEDS;
+
+      leds[leFirstDot] = color1;
+      leds[leSecondDot] = color2;
+
       FastLED.show();
-      allOut();
+      lichtabsaugung();
       delay(delayDuration);
     }
   }
@@ -186,18 +335,11 @@ void rotate(const CRGB &color1, const CRGB &color2, int delayDuration, int repea
       leds[(dot + (NUM_LEDS / 2)) % NUM_LEDS] = color2;
 
       FastLED.show();
-      allOut();
+      lichtabsaugung();
       delay((dot ^ 2)*delayDuration);
     }
   }
 }
-
-void allOut() {
-  for (int dot = 0; dot < NUM_LEDS; dot++) {
-    leds[dot] = CRGB::Black;
-  }
-}
-
 
 // Ripple
 //
@@ -205,60 +347,50 @@ void allOut() {
 //
 // Conversion by Andrew Tuline
 //
-
-void ripple() {
-
+void ripple(float fadeRate, int maxSteps, int delayDuration, int repeat)
+{
+//  maxSteps = 10;
+//  delayDuration = 20;
+//  fadeRate = 0.9;
+//  repeat = 50;
   int color;
-  int center = 0;
-  int step = -1; // need to be parameterized
-  int maxSteps = 16;
-  float fadeRate = 0.8;
-  int diff;
+  int center;
 
-  //background color
-  uint32_t currentBg = random(256);
-  uint32_t nextBg = currentBg;
-
-  if (currentBg == nextBg) {
-    nextBg = random(256);
-  }
-  else if (nextBg > currentBg) {
-    currentBg++;
-  } else {
-    currentBg--;
-  }
-  for (uint16_t l = 0; l < NUM_LEDS; l++) {
-    leds[l] = CHSV(currentBg, 255, 50);         // strip.setPixelColor(l, Wheel(currentBg, 0.1));
-  }
-
-  if (step == -1) {
-    center = random(NUM_LEDS);
+  for (int rep = 0; rep < repeat; rep++) {
+    center = wrap(random(NUM_LEDS));
     color = random(256);
-    step = 0;
-  }
+    Serial.println(color);
+    for (int step = 0; step < maxSteps; step++) {
 
-  if (step == 0) {
-    leds[center] = CHSV(color, 255, 255);         // strip.setPixelColor(center, Wheel(color, 1));
-    step ++;
-  } else {
-    if (step < maxSteps) {
-      Serial.println(pow(fadeRate, step));
-
-      leds[wrap(center + step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
-      leds[wrap(center - step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
-      if (step > 3) {
-        leds[wrap(center + step - 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
-        leds[wrap(center - step + 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
+      if (step == 0) {
+        leds[center] = CHSV(color, 255, 255);
       }
-      step ++;
-    }
-    else {
-      step = -1;
+      if (step > 0) {
+        leds[wrap(center + step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
+        leds[wrap(center - step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
+
+        if (step % 2 == 0) {
+          leds[wrap(center + step - 2)] = CHSV(color, 255, pow(fadeRate, step - 1) * 255);
+          leds[wrap(center - step + 2)] = CHSV(color, 255, pow(fadeRate, step - 1) * 255);
+        }
+        if (step % 3 == 0) {
+          leds[wrap(center + step - 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
+          leds[wrap(center - step + 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
+        }
+      }
+      LEDS.show();
+      delay(delayDuration);
+      //lichtabsaugung();
     }
   }
-
+  lichtabsaugung();
   LEDS.show();
-  delay(50);
+}
+
+void lichtabsaugung() {
+  for (int dot = 0; dot < NUM_LEDS; dot++) {
+    leds[dot] = CRGB::Black;
+  }
 }
 
 
@@ -266,10 +398,4 @@ int wrap(int step) {
   return step % NUM_LEDS;
 }
 
-
-void one_color_allHSV(int ahue, int abright) {                // SET ALL LEDS TO ONE COLOR (HSV)
-  for (int i = 0 ; i < NUM_LEDS; i++ ) {
-    leds[i] = CHSV(ahue, 255, abright);
-  }
-}
 
