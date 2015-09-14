@@ -3,15 +3,80 @@
 CRGB leds[NUM_LEDS];
 
 void setup() {
+  Serial.begin(9600);
   FastLED.addLeds<WS2801>(leds, NUM_LEDS);
 }
 
 void loop() {
 
-  int repeat = 1;
-  int delayDuration = 50;
+  //Serial.print(".");
+  int repeat = 10;
+  int delayDuration = 10;
 
+  //lichtabsaugung();
+  //ripple(0.8, 4, delayDuration, repeat);
+  //ripple(0.8, 8, delayDuration, repeat);
   showCase(delayDuration, repeat);
+  //ripple(0.8, 16, delayDuration, repeat);
+  lichtabsaugung();
+}
+
+void showCase(int delayDuration, int repeat)
+{
+  hueHueHue(CRGB::Red,   5, 3, 10, 20, 0, -5, 33, 255);
+  hueHueHue(CRGB::White, 5, 3, 10, 20, 0, -50, 0, 255);
+  hueHueHue(CRGB::White, 5, 3, 10, 20, 0, -50, -50, 255);
+  hueHueHue(CRGB::White, 5, 3, 10, 20, -100, 10, -1, 55);
+  hueHueHue(CRGB::Blue, 5, 39, 10, 20, -100, 10, -1, 105);
+  
+  ripple(0.9, 4, 100, 50);
+  
+  snakes(CRGB::Red, 2500, 100, 1);
+  snakes(CRGB::Red, 2500, 50, 1);
+  snakes(CRGB::Red, 2500, 10, 1);
+  snakes(CRGB::Red, 2500, 10, 1);
+  snakes(CRGB::Red, 2500, 10, 1);
+
+
+  fire(CRGB::Red, 10, 10, 1);
+  fire(CRGB::Red, 20, 50, 1);
+  fire(CRGB::Blue, 30, 100, 1);
+  fire(CRGB::Green, 40, 120, 1);
+  
+  tickTock(CRGB::Green, CRGB::Blue, 60, 5);
+  tickTock(CRGB::Blue, CRGB::Purple, 60, 5);
+  tickTock(CRGB::Crimson, CRGB::Amethyst, delayDuration, 5);
+
+  oneLight(CRGB::Purple, 25, 5);
+  oneLight(CRGB::Blue, 50, 5);
+
+  rotate(CRGB::Aqua, CRGB::Blue, 1, 10);
+  rotate(CRGB::Red, CRGB::Blue, 3, 10);
+  rotate(CRGB::Aqua, CRGB::Orange, 5, 10);
+
+  quartettRotate(CRGB::Blue, CRGB::Purple, 3, repeat);
+  quartettRotate(CRGB::Green, CRGB::Purple, 1, repeat);
+  quartettRotate(CRGB::Green, CRGB::Purple, 1, repeat);
+
+  against(CRGB::Red, CRGB::Aqua, 50, repeat);
+  against(CRGB::Red, CRGB::Blue, 30, repeat);
+
+  followMe(CRGB::Green, CRGB::Yellow, 50, repeat);
+  followMe(CRGB::Red, CRGB::Orange, 50, repeat);
+  followMe(CRGB::Purple, CRGB::Green, 50, repeat);
+
+  justOnExclamationMarkEleven(200);
+  singleColor(CRGB::Aqua, 2000);
+
+
+  //beat(CRGB::Aqua, 8 * 5, 10, 20, delayDuration);
+  //rainbowBeat(CRGB::Blue, 30, 10, 255);
+  //heartBeat(CRGB::Aqua, 300);
+}
+
+void greyGode(const CRGB &color1, int tail, int hue, int delayDuration, int repeat)
+{
+  // ....
 }
 
 void snakesOnARow(const CRGB &color1, int hue, int delayDuration, int repeat)
@@ -19,6 +84,16 @@ void snakesOnARow(const CRGB &color1, int hue, int delayDuration, int repeat)
   for (int rep = 0; rep < repeat; rep++) {
     snake(CRGB::Red, rep, hue, delayDuration, repeat);
   }
+}
+
+void snakes(const CRGB &color1, int hue, int delayDuration, int repeat)
+{
+  snake(CRGB::Red, 1, hue, delayDuration, repeat);
+  snake(CRGB::Red, 2, hue, delayDuration, repeat);
+  snake(CRGB::Red, 3, hue, delayDuration, repeat);
+  snake(CRGB::Red, 4, hue, delayDuration, repeat);
+  snake(CRGB::Red, 5, hue, delayDuration, repeat);
+  snake(CRGB::Red, 6, hue, delayDuration, repeat);
 }
 
 void snake(const CRGB &color1, int tail, int hue, int delayDuration, int repeat)
@@ -43,7 +118,7 @@ void snake(const CRGB &color1, int tail, int hue, int delayDuration, int repeat)
 
       FastLED.show();
       delay(delayDuration);
-      allOut();
+      lichtabsaugung();
     }
 
   }
@@ -74,58 +149,8 @@ void fire(const CRGB &color1, int hue, int delayDuration, int repeat)
 
       delay(delayDuration);
     }
-    allOut();
+    lichtabsaugung();
   }
-}
-
-
-void showCase(int delayDuration, int repeat)
-{
-  hueHueHue(CRGB::Red, 5, 3, delayDuration, repeat, 0, -5, 33, 255);
-  hueHueHue(CRGB::White, 5, 3, delayDuration, repeat, 0, -50, 0, 255);
-  hueHueHue(CRGB::White, 5, 3, delayDuration, repeat, 0, -50, -50, 255);
-  hueHueHue(CRGB::White, 5, 3, delayDuration, repeat, -100, 10, -1, 55);
-
-  ripple(0.8, 2, 700, repeat);
-  ripple(0.9, 8, 200, repeat); // <-
-  ripple(1, 4, 200, repeat);
-  ripple(0.3, 4, 200, repeat);
-  ripple(0.8, 9, 200, repeat);
-
-  snake(CRGB::Red, 1, 2500, delayDuration, repeat);
-  snake(CRGB::Red, 2, 2500, delayDuration, repeat);
-  snake(CRGB::Red, 3, 2500, delayDuration, repeat);
-  snake(CRGB::Red, 4, 2500, delayDuration, repeat);
-  snake(CRGB::Red, 5, 2500, delayDuration, repeat);
-  snake(CRGB::Red, 6, 2500, delayDuration, repeat);
-
-  tickTock(CRGB::Green, CRGB::Blue, 40, repeat);
-  tickTock(CRGB::Blue, CRGB::Purple, 5, repeat);
-  tickTock(CRGB::Crimson, CRGB::Amethyst, delayDuration, repeat);
-
-  oneLight(CRGB::Purple, 25, repeat);
-  oneLight(CRGB::Blue, 50, repeat);
-
-  rotate(CRGB::Aqua, CRGB::Blue, 1, repeat);
-  rotate(CRGB::Red, CRGB::Blue, 3, repeat);
-  rotate(CRGB::Aqua, CRGB::Orange, 5, repeat);
-
-  quartettRotate(CRGB::Blue, CRGB::Purple, 3, repeat);
-  quartettRotate(CRGB::Green, CRGB::Purple, 1, repeat);
-
-  against(CRGB::Red, CRGB::Aqua, 50, repeat);
-  against(CRGB::Red, CRGB::Blue, 30, repeat);
-
-  followMe(CRGB::Green, CRGB::Yellow, 50, repeat);
-  followMe(CRGB::Red, CRGB::Orange, 50, repeat);
-
-  justOnExclamationMarkEleven(200);
-  singleColor(CRGB::Aqua, 10);
-
-
-  //beat(CRGB::Aqua, 8 * 5, 10, 20, delayDuration);
-  //rainbowBeat(CRGB::Blue, 30, 10, 255);
-  //heartBeat(CRGB::Aqua, 300);
 }
 
 void hueHueHue(const CRGB &color1, uint16_t gHue, uint8_t  gHueDelta, int delayDuration, int repeat, int r, int b, int g, int mod)
@@ -144,6 +169,7 @@ void hueHueHue(const CRGB &color1, uint16_t gHue, uint8_t  gHueDelta, int delayD
       delay(delayDuration);
     }
   }
+  lichtabsaugung();
 }
 
 void justOnExclamationMarkEleven(int delayDuration) {
@@ -204,7 +230,7 @@ void oneLight(const CRGB &color1, int delayDuration, int repeat)
       leds[leFirstDot] = color1;
 
       FastLED.show();
-      allOut();
+      lichtabsaugung();
 
       delay(delayDuration);
     }
@@ -229,7 +255,7 @@ void quartettRotate(const CRGB &color1, const CRGB &color2, int delayDuration, i
         leds[leFortthDot] = color2;
 
         FastLED.show();
-        allOut();
+        lichtabsaugung();
 
         delay(delayDuration);
       }
@@ -256,7 +282,7 @@ void tickTock(const CRGB &color1, const CRGB &color2, int delayDuration, int rep
       leds[leFirstDot] = color1;
 
       FastLED.show();
-      allOut();
+      lichtabsaugung();
 
       delay(delayDuration);
     }
@@ -275,7 +301,7 @@ void followMe(const CRGB &color1, const CRGB &color2, int delayDuration, int rep
       leds[leFirstDot] = color1;
       leds[leSecondDot] = color2;
       FastLED.show();
-      allOut();
+      lichtabsaugung();
 
       delay(delayDuration);
     }
@@ -294,7 +320,7 @@ void against(const CRGB &color1, const CRGB &color2, int delayDuration, int repe
       leds[leSecondDot] = color2;
 
       FastLED.show();
-      allOut();
+      lichtabsaugung();
       delay(delayDuration);
     }
   }
@@ -309,7 +335,7 @@ void rotate(const CRGB &color1, const CRGB &color2, int delayDuration, int repea
       leds[(dot + (NUM_LEDS / 2)) % NUM_LEDS] = color2;
 
       FastLED.show();
-      allOut();
+      lichtabsaugung();
       delay((dot ^ 2)*delayDuration);
     }
   }
@@ -321,38 +347,47 @@ void rotate(const CRGB &color1, const CRGB &color2, int delayDuration, int repea
 //
 // Conversion by Andrew Tuline
 //
-void ripple(float fadeRate, int maxSteps, int delayDuration, int repeat) {
-
+void ripple(float fadeRate, int maxSteps, int delayDuration, int repeat)
+{
+//  maxSteps = 10;
+//  delayDuration = 20;
+//  fadeRate = 0.9;
+//  repeat = 50;
   int color;
   int center;
 
   for (int rep = 0; rep < repeat; rep++) {
     center = wrap(random(NUM_LEDS));
     color = random(256);
-
+    Serial.println(color);
     for (int step = 0; step < maxSteps; step++) {
 
       if (step == 0) {
         leds[center] = CHSV(color, 255, 255);
       }
-      if (step < maxSteps) {
+      if (step > 0) {
         leds[wrap(center + step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
         leds[wrap(center - step)] = CHSV(color, 255, pow(fadeRate, step) * 255);
 
-        if (step > 3) {
+        if (step % 2 == 0) {
+          leds[wrap(center + step - 2)] = CHSV(color, 255, pow(fadeRate, step - 1) * 255);
+          leds[wrap(center - step + 2)] = CHSV(color, 255, pow(fadeRate, step - 1) * 255);
+        }
+        if (step % 3 == 0) {
           leds[wrap(center + step - 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
           leds[wrap(center - step + 3)] = CHSV(color, 255, pow(fadeRate, step - 2) * 255);
         }
       }
-
       LEDS.show();
       delay(delayDuration);
-
+      //lichtabsaugung();
     }
   }
+  lichtabsaugung();
+  LEDS.show();
 }
 
-void allOut() {
+void lichtabsaugung() {
   for (int dot = 0; dot < NUM_LEDS; dot++) {
     leds[dot] = CRGB::Black;
   }
