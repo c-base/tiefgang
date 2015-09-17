@@ -24,11 +24,14 @@ void loop() {
   //Serial.print(".");
   int repeat = 10;
   int delayDuration = 100;
+  //quartettRotate(CRGB::Blue, CRGB::Purple, 3, repeat);
 
-  for (int unit = 0; unit < NUM_UNITS; unit++) {
-    singleColorMulti(unit, CRGB::Blue);
-    loopcrement(unit);
-  }
+  //for (int unit = 0; unit < NUM_UNITS; unit++) {
+  singleColorMulti(0, CRGB::Blue);
+  loopcrement(0);
+  quartettRotateMulti(1, CRGB::Blue, CRGB::Red);
+  loopcrement(1);
+  //}
   FastLED.show();
   delay(delayDuration);
 }
@@ -37,6 +40,32 @@ void singleColorMulti(int unit, const CRGB &color1) {
 
   int dot = loopcounter[unit] + (unit * NUM_LEDS_PER_UNIT);
   leds[dot] = color1;
+}
+
+void lichtabsaugungMulti(int unit) {
+  int maximum = NUM_LEDS_PER_UNIT * (unit+1);
+  int offset = NUM_LEDS_PER_UNIT * unit;
+  for (int dot = offset; dot < maximum; dot++) {
+    leds[dot] = CRGB::Black;
+  }
+}
+
+void quartettRotateMulti(int unit, const CRGB &color1, const CRGB &color2)
+{
+  lichtabsaugungMulti(unit);
+  
+  int dot = loopcounter[unit];
+  int offset = (unit * NUM_LEDS_PER_UNIT);
+
+  int leFirstDot = (dot + (NUM_LEDS_PER_UNIT / 4 * 1)) % NUM_LEDS_PER_UNIT + offset;
+  int leSecondDot = (dot + (NUM_LEDS_PER_UNIT / 4 * 2)) % NUM_LEDS_PER_UNIT + offset;
+  int leThirdDot = (dot + (NUM_LEDS_PER_UNIT / 4 * 3)) % NUM_LEDS_PER_UNIT + offset;
+  int leFortthDot = (dot + (NUM_LEDS_PER_UNIT / 4 * 4)) % NUM_LEDS_PER_UNIT + offset;
+
+  leds[leFirstDot] = color1;
+  leds[leSecondDot] = color2;
+  leds[leThirdDot] = color1;
+  leds[leFortthDot] = color2;
 }
 
 void loopcrement(int unit) {
