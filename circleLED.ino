@@ -1,24 +1,49 @@
 #include "FastLED.h"
-#define NUM_LEDS 20
-CRGB leds[NUM_LEDS];
+//#define NUM_LEDS 20
+#define NUM_LEDS_PER_UNIT 20
+#define NUM_UNITS 2
+#define NUM_LEDS NUM_LEDS_PER_UNIT * NUM_UNITS
+
+
+CRGB leds[NUM_LEDS_PER_UNIT * NUM_UNITS];
+int loopcounter[NUM_UNITS];
 
 void setup() {
   Serial.begin(9600);
   FastLED.addLeds<WS2801>(leds, NUM_LEDS);
+
+  for (int i = 0; i < NUM_UNITS; i++) {
+    loopcounter[i] = 0;
+  }
+
 }
 
 void loop() {
 
+
   //Serial.print(".");
   int repeat = 10;
-  int delayDuration = 10;
+  int delayDuration = 100;
 
-  //lichtabsaugung();
-  //ripple(0.8, 4, delayDuration, repeat);
-  //ripple(0.8, 8, delayDuration, repeat);
-  showCase(delayDuration, repeat);
-  //ripple(0.8, 16, delayDuration, repeat);
-  lichtabsaugung();
+  for (int unit = 0; unit < NUM_UNITS; unit++) {
+    singleColorMulti(unit, CRGB::Blue);
+    loopcrement(unit);
+  }
+  FastLED.show();
+  delay(delayDuration);
+}
+
+void singleColorMulti(int unit, const CRGB &color1) {
+
+  int dot = loopcounter[unit] + (unit * NUM_LEDS_PER_UNIT);
+  leds[dot] = color1;
+}
+
+void loopcrement(int unit) {
+  loopcounter[unit]++;
+  if (loopcounter[unit] == NUM_LEDS_PER_UNIT) {
+    loopcounter[unit] = 0;
+  }
 }
 
 void showCase(int delayDuration, int repeat)
@@ -28,9 +53,9 @@ void showCase(int delayDuration, int repeat)
   hueHueHue(CRGB::White, 5, 3, 10, 20, 0, -50, -50, 255);
   hueHueHue(CRGB::White, 5, 3, 10, 20, -100, 10, -1, 55);
   hueHueHue(CRGB::Blue, 5, 39, 10, 20, -100, 10, -1, 105);
-  
+
   ripple(0.9, 4, 100, 50);
-  
+
   snakes(CRGB::Red, 2500, 100, 1);
   snakes(CRGB::Red, 2500, 50, 1);
   snakes(CRGB::Red, 2500, 10, 1);
@@ -42,7 +67,7 @@ void showCase(int delayDuration, int repeat)
   fire(CRGB::Red, 20, 50, 1);
   fire(CRGB::Blue, 30, 100, 1);
   fire(CRGB::Green, 40, 120, 1);
-  
+
   tickTock(CRGB::Green, CRGB::Blue, 60, 5);
   tickTock(CRGB::Blue, CRGB::Purple, 60, 5);
   tickTock(CRGB::Crimson, CRGB::Amethyst, delayDuration, 5);
@@ -349,10 +374,10 @@ void rotate(const CRGB &color1, const CRGB &color2, int delayDuration, int repea
 //
 void ripple(float fadeRate, int maxSteps, int delayDuration, int repeat)
 {
-//  maxSteps = 10;
-//  delayDuration = 20;
-//  fadeRate = 0.9;
-//  repeat = 50;
+  //  maxSteps = 10;
+  //  delayDuration = 20;
+  //  fadeRate = 0.9;
+  //  repeat = 50;
   int color;
   int center;
 
