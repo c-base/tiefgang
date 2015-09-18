@@ -20,30 +20,64 @@ void setup() {
 
 void loop() {
 
-
-  //Serial.print(".");
-  int repeat = 10;
+  int repeat = 20;
   int delayDuration = 100;
-  //quartettRotate(CRGB::Blue, CRGB::Purple, 3, repeat);
 
-  //for (int unit = 0; unit < NUM_UNITS; unit++) {
-  singleColorMulti(0, CRGB::Blue);
-  loopcrement(0);
-  quartettRotateMulti(1, CRGB::Blue, CRGB::Red);
-  loopcrement(1);
-  //}
+  showCaseMulti(delayDuration, repeat);
+  //showCase(delayDuration, repeat);
+
+}
+
+void showCaseMulti(int delayDuration, int repeat)
+{
+  for (int rep = 0; rep < repeat; rep++) {
+    showCaseMultiOne(delayDuration);
+
+  }
+
+  for (int rep = 0; rep < repeat; rep++) {
+    showCaseMultiTwo(delayDuration);
+  }
+
+  //
+  //unit = 1;
+  //quartettRotateMulti(unit, CRGB::Blue, CRGB::Red);
+  //FastLED.show();
+  //delay(delayDuration);
+
+}
+void showCaseMultiOne(int delayDuration) {
+  singleColorMulti(1, CRGB::Blue);
+  quartettRotateMulti(0, CRGB::Blue, CRGB::Red);
   FastLED.show();
   delay(delayDuration);
+}
+
+
+void showCaseMultiTwo(int delayDuration) {
+  quartettRotateMulti(0, CRGB::Blue, CRGB::Red);
+  againstMulti(1, CRGB::Red, CRGB::Aqua, 50);
+  FastLED.show();
+  delay(delayDuration);
+}
+
+void loopcrement(int unit) {
+  loopcounter[unit]++;
+  if (loopcounter[unit] == NUM_LEDS_PER_UNIT) {
+    loopcounter[unit] = 0;
+  }
 }
 
 void singleColorMulti(int unit, const CRGB &color1) {
 
   int dot = loopcounter[unit] + (unit * NUM_LEDS_PER_UNIT);
   leds[dot] = color1;
+
+  loopcrement(unit);
 }
 
 void lichtabsaugungMulti(int unit) {
-  int maximum = NUM_LEDS_PER_UNIT * (unit+1);
+  int maximum = NUM_LEDS_PER_UNIT * (unit + 1);
   int offset = NUM_LEDS_PER_UNIT * unit;
   for (int dot = offset; dot < maximum; dot++) {
     leds[dot] = CRGB::Black;
@@ -53,7 +87,7 @@ void lichtabsaugungMulti(int unit) {
 void quartettRotateMulti(int unit, const CRGB &color1, const CRGB &color2)
 {
   lichtabsaugungMulti(unit);
-  
+
   int dot = loopcounter[unit];
   int offset = (unit * NUM_LEDS_PER_UNIT);
 
@@ -66,13 +100,8 @@ void quartettRotateMulti(int unit, const CRGB &color1, const CRGB &color2)
   leds[leSecondDot] = color2;
   leds[leThirdDot] = color1;
   leds[leFortthDot] = color2;
-}
 
-void loopcrement(int unit) {
-  loopcounter[unit]++;
-  if (loopcounter[unit] == NUM_LEDS_PER_UNIT) {
-    loopcounter[unit] = 0;
-  }
+  loopcrement(unit);
 }
 
 void showCase(int delayDuration, int repeat)
@@ -378,6 +407,23 @@ void against(const CRGB &color1, const CRGB &color2, int delayDuration, int repe
       delay(delayDuration);
     }
   }
+}
+
+void againstMulti(int unit, const CRGB &color1, const CRGB &color2, int delayDuration)
+{
+  lichtabsaugungMulti(unit);
+  int dot = loopcounter[unit];
+  int offset = NUM_LEDS_PER_UNIT * unit;
+
+
+  int leFirstDot = (dot + 1) % NUM_LEDS_PER_UNIT + offset;
+  int leSecondDot = (NUM_LEDS - dot) % NUM_LEDS_PER_UNIT + offset;
+
+  leds[leFirstDot] = color1;
+  leds[leSecondDot] = color2;
+
+  loopcrement(unit);
+
 }
 
 void rotate(const CRGB &color1, const CRGB &color2, int delayDuration, int repeat)
