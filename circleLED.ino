@@ -1,7 +1,7 @@
 #include "FastLED.h"
 //#define NUM_LEDS 20
 #define NUM_LEDS_PER_UNIT 20
-#define NUM_UNITS 2
+#define NUM_UNITS 6
 #define NUM_LEDS NUM_LEDS_PER_UNIT * NUM_UNITS
 
 #define CLOCK loopcounter[unit]
@@ -29,47 +29,78 @@ void setup() {
 
 void loop() {
 
-  int repeat = NUM_LEDS_PER_UNIT * 4;
-  int delayDuration = 50;
+  int repeat = NUM_LEDS_PER_UNIT * 20;
+  int delayDuration = 30;
 
   //randomMulti(0);
   //randomMulti(1);
 
-  showCaseMulti(delayDuration, repeat);
+  smileCase(delayDuration, repeat);
+  //hueHueHue(delayDuration, repeat);
+  //ripple(delayDuration, repeat);
   //snake(10, delayDuration, repeat);
   //fire(delayDuration, repeat);
   //showCase(delayDuration, repeat);
-
 }
 
 void randomMulti(int unit) {
   lichtabsaugungMulti(unit);
   //int leFirstUnit = unit % NUM_LEDS_PER_UNIT;
-  
-  unit_array[random(NUM_UNITS)-1][random(NUM_LEDS_PER_UNIT)-1] = random(255);
+
+  unit_array[random(NUM_UNITS) - 1][random(NUM_LEDS_PER_UNIT) - 1] = random(255);
   FastLED.show();
-  
+
   loopcrement(unit);
   delay(100);
+}
+
+void smileCase(int delayDuration, int repeat) {
+
+  for (int rep = 0; rep < repeat; rep++) {
+    rotateMulti(-1, CRGB::Red);
+    FastLED.show();
+    delay(delayDuration);
+  }
+  
+  for (int rep = 0; rep < repeat; rep++) {
+    rippleMulti(-1, 0.9, 8);
+    FastLED.show();
+    delay(delayDuration);
+  }
+  
+  for (int rep = 0; rep < repeat; rep++) {
+    snakeMulti(-1, CRGB::Red, 5, 4000);
+    FastLED.show();
+    delay(0);
+  }
+
+  for (int rep = 0; rep < repeat; rep++) {
+    fireMulti(-1, CRGB::Green, CRGB::Blue, 100);
+    FastLED.show();
+    delay(delayDuration);
+  }
+
+  for (int rep = 0; rep < repeat; rep++) {
+    hueHueHueMulti(-1, CRGB::Red, 5, 3, 0, -5, 33, 255);
+    FastLED.show();
+    delay(delayDuration);
+  }
 }
 
 void showCaseMulti(int delayDuration, int repeat)
 {
   fire(delayDuration, repeat);
   snake(5, delayDuration, repeat);
-
-
   against(delayDuration, repeat);
-
   rotate(delayDuration, repeat);
   justOnExclamationMarkEleven(delayDuration);
   followMe(delayDuration, repeat);
   hueHueHue(delayDuration, repeat);
-
+  ripple(delayDuration, repeat);
 
   for (int rep = 0; rep < repeat; rep++) {
     quartettRotateMulti(0, CRGB::Blue, CRGB::Red);
-    singleColorMulti(1, CRGB::Blue);
+    fireMulti(1, CRGB::Green, CRGB::Blue, 100);
     FastLED.show();
     delay(delayDuration);
   }
@@ -80,13 +111,6 @@ void showCaseMulti(int delayDuration, int repeat)
     FastLED.show();
     delay(delayDuration);
   }
-
-  //  for (int rep = 0; rep < repeat; rep++) {
-  //    rippleMulti(0, 0.9, 3);
-  //    rippleMulti(1, 0.9, 8);
-  //    FastLED.show();
-  //    delay(delayDuration);
-  //  }
 
 }
 
@@ -101,6 +125,12 @@ void fire(int delayDuration, int repeat) {
 
 void fireMulti(int unit, const CRGB &color1, const CRGB &color2, int hue)
 {
+  if (unit < 0) {
+    for (int unitCount = 0; unitCount < NUM_UNITS; unitCount++) {
+      fireMulti(unitCount, color1, color2, hue);
+    }
+    return;
+  }
   int half = (NUM_LEDS_PER_UNIT / 2);
   int leFirstDot = 0;
   int leSecondDot = half;
@@ -132,6 +162,12 @@ void snake(int maxLength, int delayDuration, int repeat) {
 }
 
 void snakeMulti(int unit, const CRGB &color1, int maxLength, int hue) {
+  if (unit < 0) {
+    for (int unitCount = 0; unitCount < NUM_UNITS; unitCount++) {
+      snakeMulti(unitCount, color1, maxLength, hue);
+    }
+    return;
+  }
   lichtabsaugungMulti(unit);
   int half = (NUM_LEDS_PER_UNIT / 2);
   int leFirstDot = CLOCK % NUM_LEDS_PER_UNIT;
@@ -150,17 +186,39 @@ void snakeMulti(int unit, const CRGB &color1, int maxLength, int hue) {
 }
 
 
+void ripple(int delayDuration, int repeat) {
+
+  for (int rep = 0; rep < repeat; rep++) {
+    rippleMulti(0, 0.9, 8);
+    rippleMulti(1, 0.9, 8);
+    FastLED.show();
+    delay(delayDuration);
+  }
+}
 
 void rippleMulti(int unit, float fadeRate, int maxSteps)
 {
+  if (unit < 0) {
+    for (int unitCount = 0; unitCount < NUM_UNITS; unitCount++) {
+      rippleMulti(unitCount, fadeRate, maxSteps);
+    }
+    return;
+  }
   int step = CLOCK % maxSteps;
+  String output;
+  String stringOne = "  ";
+
 
   if (step == 0) {
     center[unit] = random(NUM_LEDS_PER_UNIT);
     color[unit] = random(256);
-    unit_array[unit][center[unit]] = CHSV(color[unit], 255, 255);
+    unit_array[unit][wrap(center[unit])] = CHSV(color[unit], 255, 255);
   }
+  //output = step + stringOne + center[unit] + stringOne;
+  //Serial.println(output);
+
   if (step > 0) {
+
     unit_array[unit][wrap(center[unit] + step)] = CHSV(color[unit], 255, pow(fadeRate, step) * 255);
     unit_array[unit][wrap(center[unit] - step)] = CHSV(color[unit], 255, pow(fadeRate, step) * 255);
 
@@ -169,11 +227,19 @@ void rippleMulti(int unit, float fadeRate, int maxSteps)
       unit_array[unit][wrap(center[unit] - step + 2)] = CHSV(color[unit], 255, pow(fadeRate, step - 1) * 255);
     }
     if (step % 3 == 0) {
-      unit_array[unit][wrap(center[unit] + step - 3)] = CHSV(color[unit], 255, pow(fadeRate, step - 2) * 255);
-      unit_array[unit][wrap(center[unit] - step + 3)] = CHSV(color[unit], 255, pow(fadeRate, step - 2) * 255);
+      unit_array[unit][wrap(center[unit] + step - 3)] = CHSV(color[unit], 255, pow(fadeRate, step - 3) * 255);
+      unit_array[unit][wrap(center[unit] - step + 3)] = CHSV(color[unit], 255, pow(fadeRate, step - 3) * 255);
     }
   }
+
   loopcrement(unit);
+}
+
+int wrap(int step) {
+  if (step < 0) {
+    return (step + NUM_LEDS_PER_UNIT) % NUM_LEDS_PER_UNIT;
+  }
+  return step % NUM_LEDS_PER_UNIT;
 }
 
 
@@ -189,6 +255,12 @@ void hueHueHue(int delayDuration, int repeat)
 
 void hueHueHueMulti(int unit, const CRGB &color1, uint16_t gHue, uint8_t gHueDelta, int r, int b, int g, int mod)
 {
+  if (unit < 0) {
+    for (int unitCount = 0; unitCount < NUM_UNITS; unitCount++) {
+      hueHueHueMulti(unitCount, color1, gHue, gHueDelta, r, b, g, mod);
+    }
+    return;
+  }
   if (CLOCK == 0) {
     for (int dot = 0; dot < NUM_LEDS_PER_UNIT; dot++) {
       unit_array[unit][dot] = color1;
@@ -225,6 +297,12 @@ void rotate(int delayDuration, int repeat)
 
 void rotateMulti(int unit, const CRGB &color1)
 {
+  if (unit < 0) {
+    for (int unitCount = 0; unitCount < NUM_UNITS; unitCount++) {
+      rotateMulti(unitCount, color1);
+    }
+    return;
+  }
   lichtabsaugungMulti(unit);
   int leFirstDot = CLOCK % NUM_LEDS_PER_UNIT;
   unit_array[unit][leFirstDot] = color1;
@@ -421,10 +499,6 @@ void lichtabsaugungMulti(int unit) {
   FastLED.show();
 }
 
-
-int wrap(int step) {
-  return step % NUM_LEDS_PER_UNIT;
-}
 
 
 
